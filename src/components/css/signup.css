@@ -1,0 +1,10 @@
+input[type=text]{
+    padding: 20px;
+    display: block;
+}
+.box{
+    background-color:#29B448;
+    width:50%;
+    position: relative;
+    
+}

@@ -1,0 +1,23 @@
+.artist{
+    display: inline-block;
+    width : 225px;
+    height: 300px;
+    padding-right : 25px;
+    padding-top : 55px;
+    padding-left: 25px;
+    padding-bottom: 10px;
+    animation: move 15s linear infinite;
+}
+/* @keyframes move {
+    0% {
+       transform:translateX(0);
+    }
+    100% {
+       transform:translateX(-100%);
+    }
+  } */
+.artist-image{
+    height: 100%;
+    width: 100%;
+    border-radius: 35px;
+}
