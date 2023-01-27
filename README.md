@@ -2,6 +2,19 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Contents
+
+In this repository you can find: 
+
+|  | **File/Folder**                   |                                  Description                               |
+|-:|:---------------------------------:|:---------------------------------------------------------------------------|
+| 1| [public](./public)  |    |
+| 2| [src](./src)            |   |
+| 3| [package-lock.json](./package-lock.json)        |   |
+| 3| [package.json](./package.json)        |   |
+
+
+
 ## Available Scripts
 
 In the project directory, you can run:
