@@ -6,16 +6,14 @@ import Nav from './components/navbar';
 import Releases from './components/releases';
 import News from './components/news';
 import Faq from './components/faq.js';
-import Signup from './components/Signup.js';
+import Signup from './components/signup.js';
+import Dashboard from './components/dashboard.js';
 import reportWebVitals from './reportWebVitals';  
 import { BrowserRouter, Routes, Route} from 'react-router-dom';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-
   <React.StrictMode>
-    {/* <Nav /> */}
-
     <BrowserRouter>
       <Routes>
         <Route path="/" element = {<div><Nav/><App/></div>}></Route>
@@ -24,6 +22,7 @@ root.render(
         <Route path= "/news" element={<div><Nav/><News/></div>} />
         <Route path="/faq" element={<div><Nav/><Faq/></div>} />
         <Route path = "/signup" element = {<Signup/>}/>
+        <Route path = "/userdashboard" element = {<Dashboard/>}/>
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

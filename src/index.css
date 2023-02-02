@@ -12,14 +12,6 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
-/* 
-.navbar {
-  display: inline-block;
-  background-color: gray;
-  font-size: 200px;
-
-  1D1D20
-} */
 
 .artist{
   display: inline-block;
@@ -29,16 +21,7 @@ code {
   padding-top : 55px;
   padding-left: 25px;
   padding-bottom: 10px;
-  /* animation: move 15s linear infinite; */
 }
-/* @keyframes move {
-  0% {
-     transform:translateX(0);
-  }
-  100% {
-     transform:translateX(-100%);
-  }
-} */
 .artist-image{
   height: 100%;
   width: 100%;

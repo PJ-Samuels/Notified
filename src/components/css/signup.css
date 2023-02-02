@@ -1,10 +1,40 @@
+html{
+    background-color: #282c34;
+    width: 100%;
+    height: 100%;
+}
+
 input[type=text]{
-    padding: 20px;
+    position: center;
+    padding: 15px;
+    padding-bottom: 5px;
     display: block;
+    margin: 0px;
+    margin: 5px 0 22px 0;
+
 }
 .box{
+    color: black;
     background-color:#29B448;
-    width:50%;
+    width:25%;
+    height: auto;
+    white-space: nowrap;
     position: relative;
-    
+    margin: 0 auto;
+    padding: 10px;
+    border-radius: 5%;
+}
+.form{
+    position: center;
+    white-space: nowrap;
+    margin: 0px;
+    text-align: center;
+    display: inline-block;
+}
+.signup{
+    background-color: #282c34;
+    width: 100%;
+    height: 100%;
+    display: center;
+    text-align: center;
 }
