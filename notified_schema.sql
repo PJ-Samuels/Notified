@@ -1,8 +1,9 @@
 ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'oliver29';
-CREATE DATABASE IF NOT EXISTS Notified;
+-- CREATE DATABASE IF NOT EXISTS Notified;
 USE Notified;
-DROP TABLE IF EXISTS Users CASCADE;
 DROP TABLE IF EXISTS Subscribed_Artists CASCADE;
+DROP TABLE IF EXISTS Users CASCADE;
+
 
 
 CREATE TABLE Users (
@@ -18,7 +19,8 @@ CREATE TABLE Subscribed_Artists
     user_id int NOT NULL,
     artist_name varchar(255) NOT NULL,
     artist_id varchar(255) NOT NULL,
-    PRIMARY KEY (user_id),
+    artist_img varchar(255) NOT NULL,
+    PRIMARY KEY (user_id, artist_name, artist_id, artist_img),
     FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
 
