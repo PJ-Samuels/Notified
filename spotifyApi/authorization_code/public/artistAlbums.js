@@ -1,19 +1,11 @@
 
 var access_token = sessionStorage.getItem('access_token');
-// console.log("Artist search accesstoken: ",access_token);
 var artist_albums = sessionStorage.getItem('artist_albums');
 var artist_name = sessionStorage.getItem('artist_name');
 var artist_id = sessionStorage.getItem('artist_id');
 var artist_img = sessionStorage.getItem('artist_img');
 artist_albums = JSON.parse(artist_albums);
-// console.log("artist_albums", artist_albums);
-// if (artist_albums) {
 
-// } 
-// else {
-//     console.log("No artist albums found in sessionStorage");
-// }
-// artist_albums = sessionStorage.getItem('artist_albums');
 const uniqueAlbums = Array.from(new Set(artist_albums.map(a => a.name))).map(
     name => artist_albums.find(artist_album => artist_album.name === name)
 );
@@ -22,9 +14,6 @@ const uniqueAlbums = Array.from(new Set(artist_albums.map(a => a.name))).map(
 
 console.log("Unique albums",uniqueAlbums);
 if (uniqueAlbums) {
-    // artist_albums = JSON.parse(artist_albums);
-    // console.log("artist_albums", artist_albums);
-
     $(document).ready(function() {
         var html = '';
         for (var i = 0; i < 3; i++) {
@@ -58,11 +47,31 @@ $("#subscribe").click(function() {
             artist_img: artist_img
         },
         success: function() {
+            alert("You have subscribed to " + artist_name + "!")
             console.log("successful subscribe");
         }
     });
-
 });
+$("#unsubscribe").click(function() {
+    console.log("unsubscribe button clicked");
+    console.log("artist_id", artist_id);
+    console.log("artist_name", artist_name);
+    console.log("artist_img", artist_img)
+    $.ajax({
+        type: "POST",
+        url: "/unsubscribe",
+        data: {
+            artist_id: artist_id,
+            artist_name: artist_name,
+            artist_img: artist_img
+        },
+        success: function() {
+            console.log("successful unsubscribe");
+            alert("You unsubscribed from " + artist_name + "!")
+        }
+    });
+});
+
 
 $(document).ready(function () {
     $("#back").click(function () {

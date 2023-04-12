@@ -32,10 +32,10 @@ $("#user-settings").click(function() {
 
     $.ajax({
       type: "GET",
-      url: "/artistsearch",
+      url: "/usersettings",
       data: { access_token: access_token },
       success: function() {
-        window.location.href = "/artistsearch?access_token=" + access_token;
+        window.location.href = "/usersettings?access_token=" + access_token;
       }
     });
 });

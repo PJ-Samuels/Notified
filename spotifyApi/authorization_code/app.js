@@ -16,6 +16,8 @@ var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var validator = require("email-validator");
+const nodemailer = require('nodemailer');
+var config = require("./config.js")
 
 var selectuserid;
 
@@ -23,7 +25,7 @@ var mysql = require('mysql');
 var con = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "oliver29",
+    password: config.MY_SQL_PASSWORD,
     database: "Notified"
 });
 
@@ -32,8 +34,8 @@ con.connect(function(err) {
   console.log("Connected!");
 });
 
-var client_id = 'b9bd5d60afce4b29bc880a786130628e'; // Your client id
-var client_secret = '7474fdee3b1c441c9b71f0210a51a898'; // Your secret
+var client_id = config.SPOTIFY_CLIENT_ID; // Your client id
+var client_secret = config.SPOTIFY_SECRET_ID; // Your secret
 var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
 
 /**
@@ -73,11 +75,10 @@ app.get('/', function(req, res) {
 
 });
 app.post('/', function(req, res) {
-  //check to see if email is already in database
+  const password = sq.hash(email,  result['password'])
   if(validator.validate(req.body.email) ){
     const selectQuery1 = "SELECT email FROM users WHERE email = ?";
     con.query(selectQuery1, [req.body.email], function (err, result) {
-      // console.log(result)
       if (result.length > 0) {
         res.redirect('/');
         console.log("email already in database")
@@ -92,7 +93,6 @@ app.post('/', function(req, res) {
             if (err) throw err;
             const userId = result[0].user_id;
             selectuserid = userId
-            // console.log(selectuserid)
             res.redirect('/login_start');
           });
         });
@@ -106,17 +106,14 @@ app.post('/', function(req, res) {
 });
 
 app.get('/login_start', function(req, res) {
-  // res.render('login', {userId: selectuserid});
   res.sendFile(__dirname + '/public/login.html');
 });
 
 
 app.get('/login', function(req, res) {
-  // console.log("hitting redirect uri")
   var state = generateRandomString(16);
   res.cookie(stateKey, state);
 
-  // your application requests authorization
   var scope = 'user-read-private user-read-email';
   res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
@@ -185,14 +182,27 @@ app.get('/callback', function(req, res) {
     });
   }
 });
+app.get('/usersettings', function(req, res) {
+  res.sendFile(__dirname + '/public/login.html');
+});
 
 app.get('/userprofilepage', function(req, res) {
-  res.sendFile(__dirname + '/public/userprofilepage.html');
+  var access_token = req.query.access_token
+  const selectQuery = `SELECT * FROM Subscribed_Artists WHERE user_id = (${selectuserid})`;
+  con.query(selectQuery, function (err, result) {
+    const artists = result
+    const notifs = []
+    fs.readFile(__dirname + '/public/userprofilepage.ejs', 'utf8', function(err, template) {
+      const html = ejs.render(template, {artists: artists, notifications: notifs, access_token: access_token});
+      res.send(html);
+    });
+
+  });
+  // res.sendFile(__dirname + '/public/userprofilepage.html');
 });
 
 app.get('/refresh_token', function(req, res) {
 
-  // requesting access token from refresh token
   var refresh_token = req.query.refresh_token;
   var authOptions = {
     url: 'https://accounts.spotify.com/api/token',
@@ -225,34 +235,75 @@ app.post('/subscribe', (req, res) => {
   var artist_id = req.body.artist_id;
   var artist_name = req.body.artist_name;
   var artist_img = req.body.artist_img;
-  // console.log(artist_id)
-  //if artist is already in database, do not add to database
-  //if artist is not in database, add to database
-  var selectQuery = "SELECT user_id, artist_name, artist_id FROM Subscribed_Artists WHERE (user_id,artist_name, artist_id, artist_img) = ("+selectuserid+","+artist_name+","+ artist_id +","+ artist_img + ")";
-  var sql = "INSERT INTO Subscribed_Artists (user_id, artist_name, artist_id, artist_img) VALUES ("+selectuserid+","+artist_name+","+ artist_id + ","+ artist_img+ ")";
+  var selectQuery =  `SELECT user_id, artist_name, artist_id FROM Subscribed_Artists WHERE (user_id,artist_name, artist_id, artist_img) = (${selectuserid}, ${artist_name}, ${artist_id}, ${artist_img})`;
+  var sql = `INSERT INTO Subscribed_Artists (user_id, artist_name, artist_id, artist_img) VALUES (${selectuserid}, ${artist_name}, ${artist_id}, ${artist_img})`;
   con.query(selectQuery, function (err, result) {
-    //if the query returns a result, the artist is already in the database
-    // console.log("SELECTED",result)
     if (result.length > 0) {
       console.log("artist already in database");
     }
     else{
       con.query(sql, function (err, result) {
         if (err) throw err;
-        // console.log(result)
         console.log("artists inserted");
       });
     }
   });
   res.sendStatus(200);
-  console.log("new artist inserted");
+  // console.log("new artist inserted");
 });
 
-app.get('/myArtists', function(req, res) {
-  // const selectQuery = "SELECT * FROM Subscribed_Artists WHERE user_id = ?";
-  const selectQuery = "SELECT * FROM Subscribed_Artists WHERE user_id = ("+selectuserid+")";
+app.post('/unsubscribe', (req, res) => {
+  var artist_id = req.body.artist_id;
+  var artist_name = req.body.artist_name;
+  var artist_img = req.body.artist_img;
+  var selectQuery = `SELECT user_id, artist_name, artist_id FROM Subscribed_Artists WHERE (user_id,artist_name, artist_id, artist_img) = (${selectuserid}, ${artist_name}, ${artist_id}, ${artist_img})`;
+  var sql = `DELETE FROM Subscribed_Artists WHERE (user_id, artist_name, artist_id, artist_img) = (${selectuserid}, ${artist_name}, ${artist_id}, ${artist_img})`;
+
+  con.query(selectQuery, function (err, result) {
+    console.log("first result = ", result);
+    if (err) throw err;
+    if (result.length === 0) {
+      console.log("artist already unsubscribed");
+    } else {
+      con.query(sql, [selectuserid, artist_name], function (err, result2) {
+        if (err) throw err;
+        console.log("artist deleted");
+      });
+    }
+  });
+
+  res.sendStatus(200);
+  console.log("artist unsubscribed");
+});
+
+app.get("/sendEmail", function(req, res) {
+  var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'pjsamuels3@gmail.com',
+      pass: config.MY_GMAIL_PASSWORD
+    }
+  });
+
+  var mailOptions = {
+    from: 'pjsamuels3@gmail.com',
+    to: 'osamuels@bu.edu',
+    subject: 'Sending Email using Node.js',
+    text: 'That was easy!'
+  };
+  transporter.sendMail(mailOptions, function(error, info){
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
   
-  var subs
+});
+
+
+app.get('/myArtists', function(req, res) {
+  const selectQuery = "SELECT * FROM Subscribed_Artists WHERE user_id = ("+selectuserid+")";
   con.query(selectQuery, [selectuserid], function (err, result) {
     if (err) {
       console.log("error" + err)
@@ -264,14 +315,13 @@ app.get('/myArtists', function(req, res) {
         console.log("error" + err);
         return;
       }
-      // console.log(JSON.stringify(subs))
+
       const html = ejs.render(template, {subs:subs, jsonsubs: JSON.stringify(subs)});
       res.send(html);
     });
   })
 });
 app.get('/signin', function(req, res) {
-  // console.log("signin");
   res.sendFile(__dirname + '/public/signup.html')
 });
 
@@ -303,7 +353,6 @@ app.post('/signin', function(req, res) {
     res.redirect('/');
   }
 });
-
 
 console.log('Listening on 8888');
 app.listen(8888);

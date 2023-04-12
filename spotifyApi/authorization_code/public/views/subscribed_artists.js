@@ -13,9 +13,21 @@ $(document).ready(function () {
             }
           });
     });
+
+    $("#email-notif").click(function () {
+        console.log("email notif button clicked")
+        $.ajax({
+            type: "GET",
+            url: "/sendEmail",                    
+            success: function() {
+                sessionStorage.setItem('access_token', token);
+                window.location.href = "/sendEmail";
+            }
+        });
+    });
 });
 $(document).ready(function() {
     const sub1 = ($('#subscribedArtists').data('subs'))
-    // console.log("subs",sub1);
-  });
+    console.log("subs",sub1);
+});
   

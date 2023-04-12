@@ -6,15 +6,12 @@
         <script type = "text/javascript" src = "/views/subscribed_artists.js"></script>
     </head>
     <body>
-        <!-- <h1>Hello world</h1> -->
         <div>
             <h1>Subscribed artists</h1>
             <div id="subscribedArtists" data-subs= '<%- jsonsubs  -%>' ></div>
             <div>
               To Add,
               artist page link,
-              artist image,
-              artist name,
               artist notification settings,
             </div>
             <% if (subs.length) { %>
@@ -32,6 +29,10 @@
               <% } %>
               
         </div>
+        <div>
+           <h1>Send Email Notification</h1>
+           <button id = "email-notif">Press here</button>
+          </div>
         <div>
             <button id = "go_back">go back</button>
         </div>
