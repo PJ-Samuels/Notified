@@ -1,2 +1,10 @@
 node_modules/
-/Users/pjsamuels/Desktop/Notified/notify-app/spotifyapi/authorization_code/config.js
+
+
+var config = {
+    SPOTIFY_CLIENT_ID: "b9bd5d60afce4b29bc880a786130628e",
+    SPOTIFY_SECRET_ID: "7474fdee3b1c441c9b71f0210a51a898",
+    MY_SQL_PASSWORD: "oliver29",
+    MY_GMAIL_PASSWORD: "vlugpzwtstuwosqu"
+}
+module.exports = config
