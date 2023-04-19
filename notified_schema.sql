@@ -20,8 +20,9 @@ CREATE TABLE Subscribed_Artists
     artist_name varchar(255) NOT NULL,
     artist_id varchar(255) NOT NULL,
     artist_img varchar(255) NOT NULL,
+    artist_blob mediumblob,
     PRIMARY KEY (user_id, artist_name, artist_id, artist_img),
     FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
 
-INSERT INTO Users (email, username, password) VALUES ('osamuels@bu.edu','PJ Samuels', '123');
+-- INSERT INTO Users (email, username, password) VALUES ('osamuels@bu.edu','PJ Samuels', '123');

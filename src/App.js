@@ -9,13 +9,6 @@ import data2 from './albumData.js';
 import React from 'react';
 // import { BrowserRouter, Route, Switch } from 'react-router';
 function App() {
-  // const options = {
-  //   method: 'GET',
-  //   headers: {
-  //     'X-RapidAPI-Key': 'a7794b9a36mshed157cdb4537f8ap1b3af5jsn3878cc4f1a3c',
-  //     'X-RapidAPI-Host': 'spotify23.p.rapidapi.com'
-  //   }
-  // };
   const artistData = data1.map((artist, index) => {
     return <Artist
       key = {index}

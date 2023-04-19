@@ -18,8 +18,10 @@ var bodyParser = require('body-parser');
 var validator = require("email-validator");
 const nodemailer = require('nodemailer');
 var config = require("./config.js")
+const bcrypt = require("bcrypt")
 
 var selectuserid;
+var useremail;
 
 var mysql = require('mysql');
 var con = mysql.createConnection({
@@ -75,7 +77,6 @@ app.get('/', function(req, res) {
 
 });
 app.post('/', function(req, res) {
-  const password = sq.hash(email,  result['password'])
   if(validator.validate(req.body.email) ){
     const selectQuery1 = "SELECT email FROM users WHERE email = ?";
     con.query(selectQuery1, [req.body.email], function (err, result) {
@@ -86,16 +87,24 @@ app.post('/', function(req, res) {
       else{
         const insertQuery = "INSERT INTO Users (email, username, password) VALUES (?, ?, ?)";
         const selectQuery = "SELECT user_id FROM users WHERE username = ?";
-      
-        con.query(insertQuery, [req.body.email, req.body.username, req.body.password], function (err, result) {
-          if (err) throw err;
-          con.query(selectQuery, [req.body.username], function (err, result) {
-            if (err) throw err;
-            const userId = result[0].user_id;
-            selectuserid = userId
-            res.redirect('/login_start');
+    
+        bcrypt.genSalt(10, (err, salt) => {
+          bcrypt.hash(req.body.password, salt, function(err, hash) {
+            var new_password = ""+req.body.email+""+ hash
+            console.log("new password = ",new_password)
+            con.query(insertQuery, [req.body.email, req.body.username, new_password], function (err, resul1) {
+              if (err) throw err;
+              con.query(selectQuery, [req.body.username], function (err, result) {
+                if (err) throw err;
+                const userId = result[0].user_id;
+                selectuserid = userId
+                useremail = req.body.email
+                console.log("email = ",useremail)
+                res.redirect('/login');
+              });
+            });
           });
-        });
+        })
       }
     });
   }
@@ -249,7 +258,6 @@ app.post('/subscribe', (req, res) => {
     }
   });
   res.sendStatus(200);
-  // console.log("new artist inserted");
 });
 
 app.post('/unsubscribe', (req, res) => {
@@ -277,6 +285,7 @@ app.post('/unsubscribe', (req, res) => {
 });
 
 app.get("/sendEmail", function(req, res) {
+  console.log("email sent", useremail);
   var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -284,10 +293,9 @@ app.get("/sendEmail", function(req, res) {
       pass: config.MY_GMAIL_PASSWORD
     }
   });
-
   var mailOptions = {
     from: 'pjsamuels3@gmail.com',
-    to: 'osamuels@bu.edu',
+    to: useremail,
     subject: 'Sending Email using Node.js',
     text: 'That was easy!'
   };
@@ -326,26 +334,29 @@ app.get('/signin', function(req, res) {
 });
 
 app.post('/signin', function(req, res) {
-
+  console.log("hitting sign in")
   var email = req.body.email;
   if(validator.validate(email)){
     var password = req.body.password;
-    var selectQuery = "SELECT * FROM Users WHERE (email, password) = (?,?)";
-    con.query(selectQuery, [email, password], function (err, result) {
-      console.log("result = ",result)
-      if (err) {
-        console.log("error" + err)
-        return;
-      }
-      if (result.length > 0) {
-        console.log("user already in database");
-        selectuserid = result[0].user_id;
-        res.redirect('/login');
-      }
-      else{
-        console.log("user not in database");
-        res.redirect('/');
-      }
+    var pass = `SELECT * FROM Users WHERE email = ?`
+    // var selectQuery = "SELECT * FROM Users WHERE (email, password) = (?,?)";
+    con.query(pass, [email],function (err, result1) {
+      var storedPassword = result1[0].password
+      var storedHash = storedPassword.substr(email.length);
+      bcrypt.compare(password, storedHash, function(err, result2) {
+        if (result2) {
+          // if (result.length > 0) {
+            console.log("user already in database");
+            selectuserid = result1[0].user_id;
+            useremail = req.body.email
+            res.redirect('/login');
+          //}
+        }
+        else{
+          console.log("user not in database");
+          res.redirect('/');
+        }
+      });
     });
   }
   else{
@@ -356,3 +367,4 @@ app.post('/signin', function(req, res) {
 
 console.log('Listening on 8888');
 app.listen(8888);
+
