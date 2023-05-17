@@ -1,10 +1,15 @@
 <!DOCTYPE html>
+<link rel="stylesheet" type="text/css" href="index.css">
 <div>
-    <h1>Login to account</h1>
-    <form action = "/signin" method = "post">
-        <label for = "email">Email:</label>
-        <li><input type = "text" name = "email" id = "email"></li>
-        <label for = "password">Password:</label>
-        <li><input type = "password" name = "password" id = "password"></li>
-        <input type = "submit" value = "Signin">
+    <h1 class = "dashboard">Notified</h1>
+    <h2 class = "header">Login to account</h2>
+    <div class = "formbox">
+        <form class = "form" action = "/signin" method = "post">
+            <label for = "email">Email</label>
+            <li><input type = "text" name = "email" id = "email"></li>
+            <label for = "password">Password</label>
+            <li><input type = "password" name = "password" id = "password"></li>
+            <input type = "submit" value = "Signin">     
+    </div>
+
 </div>

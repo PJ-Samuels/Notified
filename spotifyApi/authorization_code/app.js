@@ -134,6 +134,7 @@ app.get('/login', function(req, res) {
     }));
 });
 
+
 app.get('/callback', function(req, res) {
   var code = req.query.code || null;
   var state = req.query.state || null;
@@ -244,17 +245,29 @@ app.post('/subscribe', (req, res) => {
   var artist_id = req.body.artist_id;
   var artist_name = req.body.artist_name;
   var artist_img = req.body.artist_img;
-  var selectQuery =  `SELECT user_id, artist_name, artist_id FROM Subscribed_Artists WHERE (user_id,artist_name, artist_id, artist_img) = (${selectuserid}, ${artist_name}, ${artist_id}, ${artist_img})`;
-  var sql = `INSERT INTO Subscribed_Artists (user_id, artist_name, artist_id, artist_img) VALUES (${selectuserid}, ${artist_name}, ${artist_id}, ${artist_img})`;
+
+  var artist_latest_album = req.body.artist_latest_album;
+  console.log(artist_latest_album)
+  var selectQuery =  `SELECT user_id, artist_name, artist_id FROM Subscribed_Artists WHERE (user_id,artist_name, artist_id, artist_img, artist_latest_album) = (${selectuserid}, ${artist_name}, ${artist_id}, ${artist_img}, '${artist_latest_album}')`;
+  var sql = `INSERT INTO Subscribed_Artists (user_id, artist_name, artist_id, artist_img, artist_latest_album) VALUES (${selectuserid}, ${artist_name}, ${artist_id}, ${artist_img}, '${artist_latest_album}')`;
   con.query(selectQuery, function (err, result) {
-    if (result.length > 0) {
-      console.log("artist already in database");
-    }
-    else{
+    console.log(result)
+    if (typeof result == "undefined"){
       con.query(sql, function (err, result) {
         if (err) throw err;
         console.log("artists inserted");
       });
+    }
+    else{
+      if (result.length > 0) {
+        console.log("artist already in database");
+      }
+      else{
+        con.query(sql, function (err, result) {
+          if (err) throw err;
+          console.log("artists inserted");
+        });
+      }
     }
   });
   res.sendStatus(200);
@@ -264,8 +277,8 @@ app.post('/unsubscribe', (req, res) => {
   var artist_id = req.body.artist_id;
   var artist_name = req.body.artist_name;
   var artist_img = req.body.artist_img;
-  var selectQuery = `SELECT user_id, artist_name, artist_id FROM Subscribed_Artists WHERE (user_id,artist_name, artist_id, artist_img) = (${selectuserid}, ${artist_name}, ${artist_id}, ${artist_img})`;
-  var sql = `DELETE FROM Subscribed_Artists WHERE (user_id, artist_name, artist_id, artist_img) = (${selectuserid}, ${artist_name}, ${artist_id}, ${artist_img})`;
+  var selectQuery =  `SELECT user_id, artist_name, artist_id FROM Subscribed_Artists WHERE (user_id,artist_name, artist_id, artist_img, latest_release) = (${selectuserid}, ${artist_name}, ${artist_id}, ${artist_img}, ${artist_latest_album})`;
+  var sql = `DELETE FROM Subscribed_Artists (user_id, artist_name, artist_id, artist_img, latest_release) VALUES (${selectuserid}, ${artist_name}, ${artist_id}, ${artist_img}, ${artist_latest_album})`;
 
   con.query(selectQuery, function (err, result) {
     console.log("first result = ", result);
@@ -284,7 +297,14 @@ app.post('/unsubscribe', (req, res) => {
   console.log("artist unsubscribed");
 });
 
-app.get("/sendEmail", function(req, res) {
+app.post("/sendEmail", function(req, res) {
+
+  var albums = req.body
+  console.log("albums",albums)
+  var email_body = ""
+  for(let i = 0; i < albums.length; i++){
+    email_body += albums[i][0] + " by " + albums[i][1] + " was released most recently \n"
+  }
   console.log("email sent", useremail);
   var transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -296,8 +316,8 @@ app.get("/sendEmail", function(req, res) {
   var mailOptions = {
     from: 'pjsamuels3@gmail.com',
     to: useremail,
-    subject: 'Sending Email using Node.js',
-    text: 'That was easy!'
+    subject: "Notified Subrcibed Artists Updates",
+    text:  email_body
   };
   transporter.sendMail(mailOptions, function(error, info){
     if (error) {

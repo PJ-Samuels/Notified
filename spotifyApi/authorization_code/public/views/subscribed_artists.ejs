@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 
 <html>
+
     <head>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script type = "text/javascript" src = "/views/subscribed_artists.js"></script>
     </head>
     <body>
+      
         <div>
-            <h1>Subscribed artists</h1>
+            <h1 class = "dashboard">Notified</h1>
+            <h2>Subscribed artists</h2>
             <div id="subscribedArtists" data-subs= '<%- jsonsubs  -%>' ></div>
+            <button id = "go_back">Your dashboard</button>
             <div>
-              To Add,
-              artist page link,
-              artist notification settings,
-            </div>
+              <h3>Get Email Notification</h3>
+              <button id = "email-notif">Press here</button>
+           </div>
             <% if (subs.length) { %>
                 <ul>
                 <% subs.forEach(function(sub) { %>
@@ -27,16 +30,8 @@
               <% } else { %>
                 <p>No subscribed artists found.</p>
               <% } %>
-              
-        </div>
-        <div>
-           <h1>Send Email Notification</h1>
-           <button id = "email-notif">Press here</button>
-          </div>
-        <div>
-            <button id = "go_back">go back</button>
-        </div>
-        
+       
+        </div>        
     </body>
 
 </html>
