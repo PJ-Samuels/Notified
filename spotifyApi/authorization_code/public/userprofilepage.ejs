@@ -1,0 +1,49 @@
+<html>
+    <link rel="stylesheet" type="text/css" href="index.css">
+    <body>
+        <div>
+            <h1 class = "newdashboard">Notified</h1>
+            <div>
+                <h2>Your Dashboard</h2>
+            </div>
+            <div class = "new-sub-artist">
+                <h3 class = "sub-artist-header">Subscribed artists</h3>
+                <button id = "search-page">Add artist (+)</button>
+            </div>
+
+            <!-- <div><%artists%></div> -->
+            <div id = "sub-container">
+            <% if (artists.length) { %>
+                <ul id = "sub">
+                    <% artists.forEach(function(artist) { %>
+                    <li class = "subs_info">
+                        <img src = '<%= artist.artist_img %>'></img><br>
+                            <p><%= artist.artist_name %></p><br>
+                        <% }); %>
+                    </li>
+                </ul>
+            <% } else { %>
+                <p>No subscribed artists found.</p>
+            <% } %>
+            <h2> Notifications</h2>
+            <% if (notifications.length) { %>
+                <ul>
+                <% notifications.forEach(function(notification) { %>
+                    <%= notification.notification %><br>
+                <% }); %>
+                </ul>
+            <% } else { %>
+                <p>No notifications found.</p>
+            <% } %>
+            </div>
+
+            <div> 
+                <!-- <p>User settings and Key page</p> -->
+                <button id = "user-settings">User Settings</button>
+            </div>
+        </div>
+    </body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src = "userprofilepage.js"></script>
+    <link href="userprofilepage.css" rel="stylesheet" type="text/css">
+</html>

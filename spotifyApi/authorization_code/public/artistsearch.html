@@ -1,0 +1,27 @@
+<link rel="stylesheet" type="text/css" href="artistsearch.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.6/handlebars.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<body>
+    <div class="container">
+        <h1 class = "dashboard">Notified</h1>
+        <div> 
+            <button id = "my_artists">Subscribed Artists</button>
+            <button id = "user_profile">Your Dashboard</button>
+        </div>
+        <h2>Search for an Artist</h2>
+        <!-- <p>Type an artist name to Search</p> -->
+        <form id="search-form">
+            <input type="text" id="query" value="" class="form-control" placeholder="Type an Artist Name"/>
+            <input type="submit" id="search" class="btn btn-primary" value="Search" />
+        </form>
+        <div id="results"></div>
+    </div>
+</body>
+
+<script id="results-template" type="text/x-handlebars-template">
+    {{#each albums.items}}
+    <div style="background-image:url({{images.0.url}})" data-album-id="{{id}}" class="cover"></div>
+    {{/each}}
+</script>
+<script src = index.js></script>
+<script src = "artistsearch.js"></script>

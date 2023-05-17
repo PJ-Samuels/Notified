@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script type = "text/javascript" src = "/views/subscribed_artists.js"></script>
+    </head>
+    <body>
+      
+        <div>
+            <h1 class = "dashboard">Notified</h1>
+            <h2>Subscribed artists</h2>
+            <div id="subscribedArtists" data-subs= '<%- jsonsubs  -%>' ></div>
+            <button id = "go_back">Your dashboard</button>
+            <div>
+              <h3>Get Email Notification</h3>
+              <button id = "email-notif">Press here</button>
+           </div>
+            <% if (subs.length) { %>
+                <ul>
+                <% subs.forEach(function(sub) { %>
+                  <img src = '<%= sub.artist_img %>'></img><br>
+                    <%= sub.artist_name %><br>
+                  <button id = "viewArtistPage">View artist Page</button><br>
+                  <p id = "notification_buttons">Notification Settings</p><br>
+
+                <% }); %>
+                </ul>
+              <% } else { %>
+                <p>No subscribed artists found.</p>
+              <% } %>
+       
+        </div>        
+    </body>
+
+</html>
